@@ -1,7 +1,7 @@
 
 /* pngconf.h - machine configurable file for libpng
  *
- * libpng version 1.2.40 - September 10, 2009
+ * libpng version 1.2.39 - August 13, 2009
  * Copyright (c) 1998-2009 Glenn Randers-Pehrson
  * (Version 0.96 Copyright (c) 1996, 1997 Andreas Dilger)
  * (Version 0.88 Copyright (c) 1995, 1996 Guy Eric Schalnat, Group 42, Inc.)
@@ -1140,8 +1140,8 @@
  * want to have unsigned int for png_uint_32 instead of unsigned long.
  */
 
-typedef unsigned long png_uint_32;
-typedef long png_int_32;
+typedef unsigned int png_uint_32;
+typedef int png_int_32;
 typedef unsigned short png_uint_16;
 typedef short png_int_16;
 typedef unsigned char png_byte;
@@ -1442,7 +1442,11 @@ typedef z_stream FAR *  png_zstreamp;
  */
 
 #ifndef PNG_ABORT
-#  define PNG_ABORT() abort()
+	#if !defined(_WIN32_WCE )
+		#define PNG_ABORT() abort()
+	#else
+		#define PNG_ABORT()
+	#endif
 #endif
 
 #ifdef PNG_SETJMP_SUPPORTED

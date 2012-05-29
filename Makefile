@@ -355,10 +355,10 @@ C_SOURCES := \
 				$(ZLIBOBJ) \
 				$(JPEGLIBOBJ) \
 				$(LIBPNGOBJ) \
-				$(LIBAESGM) \
 				$(BZIP2OBJ)
 
 CXX_SOURCES := \
+				$(LIBAESGM) \
 				$(IRRVIDEOOBJ) \
 				$(IRRDRVOBJ2) \
 				$(IRRMESHOBJ) \
@@ -391,7 +391,7 @@ CXXFLAGS:=$(INCLUDES_DIRS:%=-I%) -pthread -std=gnu++98 $(WARNINGS)
 OSNAME:=win
 TC_PATH:=$(abspath $(NACL_SDK_ROOT)/toolchain/$(OSNAME)_x86_glibc)
 CXX:=$(TC_PATH)/bin/i686-nacl-g++
-C:=$(TC_PATH)/bin/i686-nacl-gcc
+CC:=$(TC_PATH)/bin/i686-nacl-gcc
 
 #
 # Disable DOS PATH warning when using Cygwin based tools Windows
@@ -406,9 +406,9 @@ all: $(PROJECT)_x86_32.nexe $(PROJECT)_x86_64.nexe
 # Define 32 bit compile and link rules for C++ sources
 x86_32_OBJS:=$(addsuffix _32.o,$(basename $(CXX_SOURCES)))
 
-$(patsubst %.c,%_32.o,$(filter %.c,$(C_SOURCES))) : %_32.o : %.c $(THIS_MAKE)
+$(patsubst %.c,%_32.o,$(C_SOURCES)) : %_32.o : %.c $(THIS_MAKE)
 	$(C) -o $@ -c $< -m32 -O0 -g $(CXXFLAGS)
-$(patsubst %.cpp,%_32.o,$(filter %.cpp,$(CXX_SOURCES))) : %_32.o : %.cpp $(THIS_MAKE)
+$(patsubst %.cpp,%_32.o,$(CXX_SOURCES)) : %_32.o : %.cpp $(THIS_MAKE)
 	$(CXX) -o $@ -c $< -m32 -O0 -g $(CXXFLAGS)
 
 $(PROJECT)_x86_32.nexe : $(x86_32_OBJS)
@@ -417,9 +417,9 @@ $(PROJECT)_x86_32.nexe : $(x86_32_OBJS)
 # Define 64 bit compile and link rules for C++ sources
 x86_64_OBJS:=$(addsuffix _64.o,$(basename $(CXX_SOURCES)))
 
-$(patsubst %.c,%_64.o,$(filter %.c,$(C_SOURCES))) : %_64.o : %.c $(THIS_MAKE)
+$(patsubst %.c,%_64.o,$(C_SOURCES)) : %_64.o : %.c $(THIS_MAKE)
 	$(C) -o $@ -c $< -m64 -O0 -g $(CXXFLAGS)
-$(patsubst %.cpp,%_64.o,$(filter %.cpp,$(CXX_SOURCES))) : %_64.o : %.cpp $(THIS_MAKE)
+$(patsubst %.cpp,%_64.o,$(CXX_SOURCES)) : %_64.o : %.cpp $(THIS_MAKE)
 	$(CXX) -o $@ -c $< -m64 -O0 -g $(CXXFLAGS)
 
 $(PROJECT)_x86_64.nexe : $(x86_64_OBJS)
