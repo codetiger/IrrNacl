@@ -178,8 +178,16 @@ namespace video
 
 		void dump() const;
 
-		void initExtensions(COGLES2Driver* driver,
-				EGLDisplay display, bool withStencil);
+#ifdef _IRR_NACL_PLATFORM_
+            void initExtensions( COGLES2Driver* driver,
+                                 bool withStencil );
+#else
+
+
+            void initExtensions( COGLES2Driver* driver,
+                                 EGLDisplay display,
+                                 bool withStencil );
+#endif
 
 	protected:
 		u16 EGLVersion;

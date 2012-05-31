@@ -34,6 +34,10 @@ namespace irr
 		in by defining the IRR_USE_SDL_DEVICE macro in IrrCompileConfig.h */
 		EIDT_SDL,
 
+		//! A device native to the Native Client
+		/** This device should be used with OpenGL-ES driver */
+		EIDT_NACL,
+
 		//! A device for raw framebuffer access
 		/** Best used with embedded devices and mobile systems.
 		Does not need X11 or other graphical subsystems.

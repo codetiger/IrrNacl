@@ -118,7 +118,10 @@ namespace video
 
 
 	COGLES2ExtensionHandler::COGLES2ExtensionHandler() :
-			EGLVersion(0), Version(0), MaxTextureUnits(0), MaxSupportedTextures(0),
+#ifndef _IRR_NACL_PLATFORM_                
+                EGLVersion( 0 ), 
+#endif
+			Version(0), MaxTextureUnits(0), MaxSupportedTextures(0),
 			MaxLights(0), MaxAnisotropy(1), MaxUserClipPlanes(6), MaxTextureSize(1),
 			MaxIndices(0xffff), MaxTextureLODBias(0.f), MultiTextureExtension(false),
 			MultiSamplingExtension(false), StencilBuffer(false)
@@ -135,14 +138,12 @@ namespace video
 	}
 
 
-	void COGLES2ExtensionHandler::initExtensions(COGLES2Driver* driver,
-			EGLDisplay display, bool withStencil)
+        void COGLES2ExtensionHandler::initExtensions( COGLES2Driver* driver,
+#ifndef _IRR_NACL_PLATFORM_
+                                                      EGLDisplay display,
+#endif
+                                                      bool withStencil )
 	{
-		const f32 egl_ver = core::fast_atof(reinterpret_cast<const c8*>(eglQueryString(display, EGL_VERSION)));
-		EGLVersion = static_cast<u16>(core::floor32(egl_ver) * 100 + core::round32(core::fract(egl_ver) * 10.0f));
-		core::stringc eglExtensions = eglQueryString(display, EGL_EXTENSIONS);
-		os::Printer::log(eglExtensions.c_str());
-
 		const core::stringc stringVer(glGetString(GL_VERSION));
 		const f32 ogl_ver = core::fast_atof(stringVer.c_str() + 10);
 		Version = static_cast<u16>(core::floor32(ogl_ver) * 100 + core::round32(core::fract(ogl_ver) * 10.0f));

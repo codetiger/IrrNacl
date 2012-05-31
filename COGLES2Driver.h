@@ -18,13 +18,13 @@
 #include "MacOSX/CIrrDeviceMacOSX.h"
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 #include "CIrrDeviceIPhone.h"
+#elif defined(_IRR_NACL_PLATFORM_)
+#include "CIrrDeviceNaCl.h"
 #endif
 
 #include "SIrrCreationParameters.h"
 
 #ifdef _IRR_COMPILE_WITH_OGLES2_
-
-#include <EGL/eglplatform.h>
 
 #include "CNullDriver.h"
 #include "IMaterialRendererServices.h"
@@ -442,11 +442,12 @@ namespace video
 #ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 		HDC HDc;
 #endif
+#ifndef _IRR_NACL_PLATFORM_
 		NativeWindowType EglWindow;
 		void* EglDisplay;
 		void* EglSurface;
 		void* EglContext;
-
+#endif
 		COGLES2FixedPipelineShader* FixedPipeline;
 		COGLES2Renderer2d* TwoDRenderer;
 		bool NoHighLevelShader;

@@ -18,7 +18,9 @@
 #include "CImage.h"
 #include "os.h"
 
+#ifndef _IRR_NACL_PLATFORM_
 #include <EGL/egl.h>
+#endif
 #include <GLES2/gl2.h>
 
 namespace irr
@@ -36,8 +38,10 @@ namespace video
 		: CNullDriver(io, params.WindowSize), COGLES2ExtensionHandler(),
 		CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 		Transformation3DChanged(true), AntiAlias(params.AntiAlias),
-		RenderTargetTexture(0), CurrentRendertargetSize(0, 0), ColorFormat(ECF_R8G8B8),
-		EglDisplay(EGL_NO_DISPLAY)
+                RenderTargetTexture( 0 ), CurrentRendertargetSize( 0, 0 ), ColorFormat( ECF_R8G8B8 )
+#ifndef _IRR_NACL_PLATFORM_
+                , EglDisplay( EGL_NO_DISPLAY )
+#endif
 #if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
 		, HDc(0)
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
@@ -64,6 +68,7 @@ namespace video
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 		Device = device;
 #endif
+#ifndef _IRR_NACL_PLATFORM_
 		if (EglDisplay == EGL_NO_DISPLAY)
 		{
 			os::Printer::log("Getting OpenGL-ES2 display.");
@@ -231,6 +236,10 @@ namespace video
 		// set vsync
 		if (params.Vsync)
 			eglSwapInterval(EglDisplay, 1);
+#endif
+#ifdef _IRR_NACL_PLATFORM_
+            genericDriverInit( params.WindowSize, params.Stencilbuffer );
+#endif
 	}
 
 
@@ -240,12 +249,13 @@ namespace video
 		deleteMaterialRenders();
 		deleteAllTextures();
 
+#ifndef _IRR_NACL_PLATFORM_
 		// HACK : the following is commented because destroying the context crashes under Linux (Thibault 04-feb-10)
 		/*eglMakeCurrent(EGL_NO_DISPLAY, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 		eglDestroyContext(EglDisplay, EglContext);
 		eglDestroySurface(EglDisplay, EglSurface);*/
 		eglTerminate(EglDisplay);
-
+#endif
 #if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
 		if (HDc)
 			ReleaseDC((HWND)EglWindow, HDc);
@@ -263,9 +273,6 @@ namespace video
 	{
 		Name = glGetString(GL_VERSION);
 		printVersion();
-
-		os::Printer::log(eglQueryString(EglDisplay, EGL_CLIENT_APIS));
-
 		// print renderer information
 		vendorName = glGetString(GL_VENDOR);
 		os::Printer::log(vendorName.c_str(), ELL_INFORMATION);
@@ -274,9 +281,11 @@ namespace video
 		for (i = 0; i < MATERIAL_MAX_TEXTURES; ++i)
 			CurrentTexture[i] = 0;
 		// load extensions
-		initExtensions(this,
-						EglDisplay,
-						stencilBuffer);
+            initExtensions( this,
+#ifndef _IRR_NACL_PLATFORM_
+                            EglDisplay,
+#endif
+                            stencilBuffer );
 
 		StencilBuffer = stencilBuffer;
 
@@ -393,19 +402,6 @@ namespace video
 	{
 		CNullDriver::endScene();
 
-		eglSwapBuffers(EglDisplay, EglSurface);
-		EGLint g = eglGetError();
-		if (EGL_SUCCESS != g)
-		{
-			if (EGL_CONTEXT_LOST == g)
-			{
-				// o-oh, ogl-es has lost contexts...
-				os::Printer::log("Context lost, please restart your app.");
-			}
-			else
-				os::Printer::log("Could not swap buffers for OpenGL-ES2 driver.");
-			return false;
-		}
 		return true;
 	}
 
@@ -1568,59 +1564,7 @@ namespace video
 
 	bool COGLES2Driver::testEGLError()
 	{
-#if defined(EGL_VERSION_1_0) && defined(_DEBUG)
-		EGLint g = eglGetError();
-		switch (g)
-		{
-			case EGL_SUCCESS:
-				return false;
-			case EGL_NOT_INITIALIZED :
-				os::Printer::log("Not Initialized", ELL_ERROR);
-				break;
-			case EGL_BAD_ACCESS:
-				os::Printer::log("Bad Access", ELL_ERROR);
-				break;
-			case EGL_BAD_ALLOC:
-				os::Printer::log("Bad Alloc", ELL_ERROR);
-				break;
-			case EGL_BAD_ATTRIBUTE:
-				os::Printer::log("Bad Attribute", ELL_ERROR);
-				break;
-			case EGL_BAD_CONTEXT:
-				os::Printer::log("Bad Context", ELL_ERROR);
-				break;
-			case EGL_BAD_CONFIG:
-				os::Printer::log("Bad Config", ELL_ERROR);
-				break;
-			case EGL_BAD_CURRENT_SURFACE:
-				os::Printer::log("Bad Current Surface", ELL_ERROR);
-				break;
-			case EGL_BAD_DISPLAY:
-				os::Printer::log("Bad Display", ELL_ERROR);
-				break;
-			case EGL_BAD_SURFACE:
-				os::Printer::log("Bad Surface", ELL_ERROR);
-				break;
-			case EGL_BAD_MATCH:
-				os::Printer::log("Bad Match", ELL_ERROR);
-				break;
-			case EGL_BAD_PARAMETER:
-				os::Printer::log("Bad Parameter", ELL_ERROR);
-				break;
-			case EGL_BAD_NATIVE_PIXMAP:
-				os::Printer::log("Bad Native Pixmap", ELL_ERROR);
-				break;
-			case EGL_BAD_NATIVE_WINDOW:
-				os::Printer::log("Bad Native Window", ELL_ERROR);
-				break;
-			case EGL_CONTEXT_LOST:
-				os::Printer::log("Context Lost", ELL_ERROR);
-				break;
-		};
-		return true;
-#else
 		return false;
-#endif
 	}
 
 
@@ -2828,7 +2772,7 @@ namespace irr
 namespace video
 {
 
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_COMPILE_WITH_SDL_DEVICE_) || defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_) || defined(_IRR_COMPILE_WITH_CONSOLE_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_COMPILE_WITH_SDL_DEVICE_) || defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_) || defined(_IRR_COMPILE_WITH_CONSOLE_DEVICE_) || defined(_IRR_NACL_PLATFORM_)
 	IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params,
 			video::SExposedVideoData& data, io::IFileSystem* io)
 	{
