@@ -10,7 +10,6 @@
 #include "IrrCompileConfig.h"
 
 #ifdef _IRR_COMPILE_WITH_OGLES2_
-#include <EGL/egl.h>
 #include <GLES2/gl2.h>
 // seems to be missing...
 typedef char GLchar;
@@ -178,16 +177,7 @@ namespace video
 
 		void dump() const;
 
-#ifdef _IRR_NACL_PLATFORM_
-            void initExtensions( COGLES2Driver* driver,
-                                 bool withStencil );
-#else
-
-
-            void initExtensions( COGLES2Driver* driver,
-                                 EGLDisplay display,
-                                 bool withStencil );
-#endif
+        void initExtensions( COGLES2Driver* driver, bool withStencil );
 
 	protected:
 		u16 EGLVersion;

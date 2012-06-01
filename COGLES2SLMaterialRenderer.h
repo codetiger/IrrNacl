@@ -84,7 +84,7 @@ namespace video
 		virtual IVideoDriver* getVideoDriver();
 
 		void useProgram();
-
+		void fillAllShaders();
 	protected:
 
 		//! constructor only for use by derived classes who want to
@@ -131,6 +131,16 @@ namespace video
 
 		const char* const* UniformStringTable;
 		const int UniformCount;
+
+		char* COGLES2FixedPipeline_fsh;
+		char* COGLES2FixedPipeline_vsh;
+		char* COGLES2NormalMap_fsh;
+		char* COGLES2NormalMap_vsh;
+		char* COGLES2ParallaxMap_fsh;
+		char* COGLES2ParallaxMap_vsh;
+		char* COGLES2Renderer2D_fsh;
+		char* COGLES2Renderer2D_vsh;
+
 	};
 
 } // end namespace video

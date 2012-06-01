@@ -3,10 +3,10 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "IrrCompileConfig.h"
+#include "CIrrDeviceNaCl.h"
 
 #ifdef _IRR_NACL_PLATFORM_
 
-#include "CIrrDeviceNaCl.h"
 #include "IEventReceiver.h"
 #include "irrList.h"
 #include "os.h"
@@ -111,7 +111,6 @@ bool CIrrDeviceNaCl::activateJoysticks(core::array<SJoystickInfo> & joystickInfo
 //! pause execution temporarily
 void CIrrDeviceNaCl::yield()
 {
-//    SDL_Delay(0);
 }
 
 

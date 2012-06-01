@@ -109,6 +109,7 @@ sharedlib: $(LINKOBJ)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -shared -Wl,-soname,$(SONAME) -o $(SHARED_FULLNAME) $^ $(LDFLAGS)
 	mkdir -p $(LIB_PATH)
 	cp $(SHARED_FULLNAME) $(LIB_PATH)
+	cp $(SHARED_FULLNAME) ../tumbler/libs/libIrrlicht.so
 
 # Builds Irrlicht as static lib (libIrrlicht.a)
 $(STATIC_LIB): $(LINKOBJ)

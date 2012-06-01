@@ -118,9 +118,6 @@ namespace video
 
 
 	COGLES2ExtensionHandler::COGLES2ExtensionHandler() :
-#ifndef _IRR_NACL_PLATFORM_                
-                EGLVersion( 0 ), 
-#endif
 			Version(0), MaxTextureUnits(0), MaxSupportedTextures(0),
 			MaxLights(0), MaxAnisotropy(1), MaxUserClipPlanes(6), MaxTextureSize(1),
 			MaxIndices(0xffff), MaxTextureLODBias(0.f), MultiTextureExtension(false),
@@ -138,11 +135,7 @@ namespace video
 	}
 
 
-        void COGLES2ExtensionHandler::initExtensions( COGLES2Driver* driver,
-#ifndef _IRR_NACL_PLATFORM_
-                                                      EGLDisplay display,
-#endif
-                                                      bool withStencil )
+        void COGLES2ExtensionHandler::initExtensions( COGLES2Driver* driver, bool withStencil )
 	{
 		const core::stringc stringVer(glGetString(GL_VERSION));
 		const f32 ogl_ver = core::fast_atof(stringVer.c_str() + 10);

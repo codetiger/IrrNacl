@@ -18,6 +18,7 @@
 #include "COGLES2Texture.h"
 
 #include <GLES2/gl2.h>
+#include "shaders.h"
 
 namespace irr
 {
@@ -184,6 +185,7 @@ namespace video
 
 	bool COGLES2SLMaterialRenderer::readShader( GLenum shaderType, const c8* shaderFile )
 	{
+#ifndef _IRR_NACL_PLATFORM_
 		io::IReadFile* file = FileSystem->createAndOpenFile(shaderFile);
 		if (!file)
 		{
@@ -201,9 +203,33 @@ namespace video
 		c8* shader = new c8[size+1];
 		file->read(shader, size);
 		shader[size] = 0;
+		file->drop();
+#else
+		fillAllShaders();
+		c8* shader = NULL;
+		long size = 0;
+		if(strcmp(shaderFile, "COGLES2FixedPipeline.fsh"))
+			shader = COGLES2FixedPipeline_fsh;
+		else if(strcmp(shaderFile, "COGLES2FixedPipeline.vsh"))
+			shader = COGLES2FixedPipeline_vsh;
+		else if(strcmp(shaderFile, "COGLES2NormalMap.fsh"))
+			shader = COGLES2NormalMap_fsh;
+		else if(strcmp(shaderFile, "COGLES2NormalMap.vsh"))
+			shader = COGLES2NormalMap_vsh;
+		else if(strcmp(shaderFile, "COGLES2ParallaxMap.fsh"))
+			shader = COGLES2ParallaxMap_fsh;
+		else if(strcmp(shaderFile, "COGLES2ParallaxMap.vsh"))
+			shader = COGLES2ParallaxMap_vsh;
+		else if(strcmp(shaderFile, "COGLES2Renderer2D.fsh"))
+			shader = COGLES2Renderer2D_fsh;
+		else if(strcmp(shaderFile, "COGLES2Renderer2D.vsh"))
+			shader = COGLES2Renderer2D_vsh;
+		size = strlen(shader);
+		shader[size] = 0;
+
+#endif
 
 		bool success = createShader(shaderType, shader, shaderFile);
-		file->drop();
 		delete shader;
 		return success;
 	}
