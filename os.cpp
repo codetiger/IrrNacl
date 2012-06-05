@@ -26,7 +26,7 @@
 	#include <sys/endian.h>
 	#define bswap_16(X) bswap16(X)
 	#define bswap_32(X) bswap32(X)
-#elif !defined(_IRR_SOLARIS_PLATFORM_) && !defined(__PPC__) && !defined(_IRR_WINDOWS_API_) && !defined(_IRR_NACL_PLATFORM_)
+#elif !defined(_IRR_SOLARIS_PLATFORM_) && !defined(__PPC__) && !defined(_IRR_WINDOWS_API_)
 	#include <byteswap.h>
 #else
 	#define bswap_16(X) ((((X)&0xFF) << 8) | (((X)&0xFF00) >> 8))

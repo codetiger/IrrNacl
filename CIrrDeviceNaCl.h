@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 // This device code is based on the original SDL device implementation
@@ -7,24 +7,14 @@
 #ifndef __C_IRR_DEVICE_NACL_H_INCLUDED__
 #define __C_IRR_DEVICE_NACL_H_INCLUDED__
 
-
-#include <errno.h>
-#include <math.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-
 #include "IrrCompileConfig.h"
 
-#ifdef _IRR_NACL_PLATFORM_
+#ifdef _IRR_COMPILE_WITH_NACL_DEVICE_
 
 #include "IrrlichtDevice.h"
 #include "CIrrDeviceStub.h"
 #include "IImagePresenter.h"
 #include "ICursorControl.h"
-
 
 namespace irr
 {
@@ -72,7 +62,7 @@ namespace irr
 		//! \return Returns a pointer to a list with all video modes supported
 		video::IVideoModeList* getVideoModeList();
 
-		//! Sets if the window should be resizeable in windowed mode.
+		//! Sets if the window should be resizable in windowed mode.
 		virtual void setResizable(bool resize=false);
 
 		//! Minimizes the window.
@@ -112,11 +102,11 @@ namespace irr
 			//! Changes the visible state of the mouse cursor.
 			virtual void setVisible(bool visible)
 			{
-				//IsVisible = visible;
-				//if ( visible )
-				//	SDL_ShowCursor( SDL_ENABLE );
-				//else
-				//	SDL_ShowCursor( SDL_DISABLE );
+				/*IsVisible = visible;
+				if ( visible )
+					SDL_ShowCursor( SDL_ENABLE );
+				else
+					SDL_ShowCursor( SDL_DISABLE );*/
 			}
 
 			//! Returns if the cursor is currently visible.
@@ -199,29 +189,44 @@ namespace irr
 
 		void createKeyMap();
 
+//		SDL_Surface* Screen;
+//		int SDL_Flags;
+//#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
+//		core::array<SDL_Joystick*> Joysticks;
+//#endif
+
 		s32 MouseX, MouseY;
+		u32 MouseButtonStates;
 
 		u32 Width, Height;
 
-		bool Close;
-		bool Resizeable;
+		bool Resizable;
 		bool WindowHasFocus;
 		bool WindowMinimized;
 
 		struct SKeyMap
 		{
 			SKeyMap() {}
+//			SKeyMap(s32 x11, s32 win32)
+//				: SDLKey(x11), Win32Key(win32)
+//			{
+//			}
+
+//			s32 SDLKey;
+//			s32 Win32Key;
 
 			bool operator<(const SKeyMap& o) const
 			{
+//				return SDLKey<o.SDLKey;
 			}
 		};
 
 		core::array<SKeyMap> KeyMap;
+//		SDL_SysWMinfo Info;
 	};
 
 } // end namespace irr
 
-#endif // _IRR_NACL_PLATFORM_
+#endif // _IRR_COMPILE_WITH_NACL_DEVICE_
 #endif // __C_IRR_DEVICE_NACL_H_INCLUDED__
 

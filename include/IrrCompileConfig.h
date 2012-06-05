@@ -25,7 +25,6 @@
 //! _IRR_SOLARIS_PLATFORM_ for Solaris
 //! _IRR_OSX_PLATFORM_ for Apple systems running OSX
 //! _IRR_IPHONE_PLATFORM_ for Apple iPhone OS
-//! _IRR_NACL_PLATFORM_ for Google Native Client
 //! _IRR_POSIX_API_ for Posix compatible systems
 //! Note: PLATFORM defines the OS specific layer, API can group several platforms
 
@@ -38,7 +37,6 @@
 //! _IRR_COMPILE_WITH_SDL_DEVICE_ for platform independent SDL framework
 //! _IRR_COMPILE_WITH_CONSOLE_DEVICE_ for no windowing system, used as a fallback
 //! _IRR_COMPILE_WITH_IPHONE_DEVICE_ for UIKit windowing on iPhoneOS (aka embeded OSX)
-//! _IRR_COMPILE_WITH_NACL_DEVICE_ for windowing on NaCl
 //! _IRR_COMPILE_WITH_FB_DEVICE_ for framebuffer systems
 
 //! Passing defines to the compiler which have NO in front of the _IRR definename is an alternative
@@ -47,7 +45,11 @@
 //! different library versions without having to change the sources.
 //! Example: NO_IRR_COMPILE_WITH_X11_ would disable X11
 
-#define _IRR_NACL_PLATFORM_
+//! Uncomment this line to compile with the NACL device
+#define _IRR_COMPILE_WITH_NACL_DEVICE_
+#ifdef NO_IRR_COMPILE_WITH_NACL_DEVICE_
+#undef _IRR_COMPILE_WITH_NACL_DEVICE_
+#endif
 
 //! Uncomment this line to compile with the SDL device
 //#define _IRR_COMPILE_WITH_SDL_DEVICE_
@@ -59,6 +61,11 @@
 #define _IRR_COMPILE_WITH_CONSOLE_DEVICE_
 #ifdef NO_IRR_COMPILE_WITH_CONSOLE_DEVICE_
 #undef _IRR_COMPILE_WITH_CONSOLE_DEVICE_
+#endif
+
+#if defined(_IRR_COMPILE_WITH_NACL_DEVICE_)
+#define _IRR_NACL_PLATFORM_
+#define _IRR_COMPILE_WITH_OGLES2_
 #endif
 
 //! WIN32 for Windows32
@@ -156,7 +163,7 @@ If not defined, Windows Multimedia library is used, which offers also broad supp
 
 //! Only define _IRR_COMPILE_WITH_DIRECT3D_8_ if you have an appropriate DXSDK, e.g. Summer 2004
 // #define _IRR_COMPILE_WITH_DIRECT3D_8_
-#define _IRR_COMPILE_WITH_DIRECT3D_9_
+//#define _IRR_COMPILE_WITH_DIRECT3D_9_
 
 #ifdef NO_IRR_COMPILE_WITH_DIRECT3D_8_
 #undef _IRR_COMPILE_WITH_DIRECT3D_8_
@@ -199,7 +206,7 @@ if using this driver, to avoid problems with the ogl-es emulators.
 #undef _IRR_COMPILE_WITH_OGLES2_
 #endif
 #ifndef IRR_OGLES2_SHADER_PATH 
-#define IRR_OGLES2_SHADER_PATH "../../media/Shaders/"
+#define IRR_OGLES2_SHADER_PATH ""
 #endif
 
 //! Define _IRR_COMPILE_WITH_SOFTWARE_ to compile the Irrlicht engine with software driver
@@ -221,7 +228,7 @@ comment this define out */
 /** If you do not wish the engine to be compiled with X11, comment this
 define out. */
 // Only used in LinuxDevice.
-//#define _IRR_COMPILE_WITH_X11_
+#define _IRR_COMPILE_WITH_X11_
 #ifdef NO_IRR_COMPILE_WITH_X11_
 #undef _IRR_COMPILE_WITH_X11_
 #endif
@@ -765,6 +772,13 @@ precision will be lower but speed higher. currently X86 only
 #undef _IRR_COMPILE_WITH_DIRECT3D_9_
 #pragma message("Compiling Irrlicht with Visual Studio 6.0, support for DX9 is disabled.")
 #endif
+#endif
+
+#if defined (_IRR_COMPILE_WITH_NACL_DEVICE_)
+	#undef _IRR_COMPILE_WITH_OPENGL_
+	#undef _IRR_COMPILE_WITH_DIRECT3D_8_
+	#undef _IRR_COMPILE_WITH_DIRECT3D_9_
+	#undef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 #endif
 
 // XBox does not have OpenGL or DirectX9

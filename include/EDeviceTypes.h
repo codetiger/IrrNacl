@@ -34,10 +34,6 @@ namespace irr
 		in by defining the IRR_USE_SDL_DEVICE macro in IrrCompileConfig.h */
 		EIDT_SDL,
 
-		//! A device native to the Native Client
-		/** This device should be used with OpenGL-ES driver */
-		EIDT_NACL,
-
 		//! A device for raw framebuffer access
 		/** Best used with embedded devices and mobile systems.
 		Does not need X11 or other graphical subsystems.
@@ -49,6 +45,10 @@ namespace irr
 		It can render the output of the software drivers to the console as ASCII. It only supports
 		mouse and keyboard in Windows operating systems. */
 		EIDT_CONSOLE,
+
+		//! A device native to Google Chrome Native Client
+		/** This device uses the NaCl and works in Latest versions of Google Chrome */
+		EIDT_NACL,
 
 		//! This selection allows Irrlicht to choose the best device from the ones available.
 		/** If this selection is chosen then Irrlicht will try to use the IrrlichtDevice native

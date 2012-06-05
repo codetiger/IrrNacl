@@ -8,17 +8,33 @@
 
 #include "IrrCompileConfig.h"
 
-#include "CIrrDeviceNaCl.h"
+#if defined(_IRR_WINDOWS_API_)
+// include windows headers for HWND
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
+#elif defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
+#include "MacOSX/CIrrDeviceMacOSX.h"
+#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
+#include "CIrrDeviceIPhone.h"
+#endif
 
 #include "SIrrCreationParameters.h"
 
 #ifdef _IRR_COMPILE_WITH_OGLES2_
+
+#include <EGL/eglplatform.h>
 
 #include "CNullDriver.h"
 #include "IMaterialRendererServices.h"
 #include "EDriverFeatures.h"
 #include "fast_atof.h"
 
+#ifdef _MSC_VER
+#pragma comment(lib, "libEGL.lib")
+#pragma comment(lib, "libGLESv2.lib")
+#endif
 #include "COGLES2ExtensionHandler.h"
 
 namespace irr
@@ -32,9 +48,22 @@ namespace video
 	class COGLES2Driver : public CNullDriver, public IMaterialRendererServices, public COGLES2ExtensionHandler
 	{
 	public:
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_COMPILE_WITH_SDL_DEVICE_) || defined(_IRR_WINDOWS_API_) || defined(_IRR_COMPILE_WITH_CONSOLE_DEVICE_)
 		COGLES2Driver(const SIrrlichtCreationParameters& params,
 					const SExposedVideoData& data,
 					io::IFileSystem* io);
+#endif
+
+#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
+		COGLES2Driver(const SIrrlichtCreationParameters& params,
+					io::IFileSystem* io, CIrrDeviceMacOSX *device);
+#endif
+
+#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
+		COGLES2Driver(const SIrrlichtCreationParameters& params,
+					const SExposedVideoData& data,
+					io::IFileSystem* io, MIrrIPhoneDevice const & device);
+#endif
 
 		//! destructor
 		virtual ~COGLES2Driver();
@@ -409,6 +438,14 @@ namespace video
 
 		core::array<RequestedLight> RequestedLights;
 		SColorf AmbientLight;
+
+#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
+		HDC HDc;
+#endif
+		NativeWindowType EglWindow;
+		void* EglDisplay;
+		void* EglSurface;
+		void* EglContext;
 
 		COGLES2FixedPipelineShader* FixedPipeline;
 		COGLES2Renderer2d* TwoDRenderer;

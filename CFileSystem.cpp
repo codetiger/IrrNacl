@@ -541,9 +541,7 @@ bool CFileSystem::changeWorkingDirectoryTo(const io::path& newDirectory)
 	{
 		WorkingDirectory[FILESYSTEM_NATIVE] = newDirectory;
 
-#if defined(_IRR_NACL_PLATFORM_)
-
-#else 
+#ifndef _IRR_COMPILE_WITH_NACL_DEVICE_
 #if defined(_IRR_WINDOWS_CE_PLATFORM_)
 		success = true;
 #elif defined(_MSC_VER)
@@ -923,10 +921,8 @@ bool CFileSystem::existFile(const io::path& filename) const
 		return true;
 	}
 #else
-#if defined(_IRR_NACL_PLATFORM_)
-
-#else 
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+#ifndef _IRR_COMPILE_WITH_NACL_DEVICE_
 #if defined(_MSC_VER)
 #if defined(_IRR_WCHAR_FILESYSTEM)
 	return (_waccess(filename.c_str(), 0) != -1);

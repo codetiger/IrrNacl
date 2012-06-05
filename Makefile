@@ -155,4 +155,3 @@ clean:
 	$(RM) $(LINKOBJ) $(SHARED_FULLNAME) $(STATIC_LIB) $(LINKOBJ:.o=.d)
 
 .PHONY: all sharedlib staticlib sharedlib_win32 staticlib_win32 help install clean
-

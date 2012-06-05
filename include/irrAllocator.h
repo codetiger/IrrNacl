@@ -8,9 +8,7 @@
 #include "irrTypes.h"
 #include <new>
 // necessary for older compilers
-#ifndef _IRR_NACL_PLATFORM_
 #include <memory.h>
-#endif
 
 namespace irr
 {

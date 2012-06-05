@@ -143,7 +143,7 @@ namespace video
 		SColorf MaterialSpecular;
 		float MaterialShininess;
 
-		E_MATERIAL_TYPE RenderMode;
+		int RenderMode;
 	private :
 		enum SHADER_UNIFORM
 		{

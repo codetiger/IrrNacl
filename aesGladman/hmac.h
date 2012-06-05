@@ -36,9 +36,7 @@
 #ifndef _HMAC_H
 #define _HMAC_H
 
-#ifndef _IRR_NACL_PLATFORM_
 #include <memory.h>
-#endif
 
 #define USE_SHA1
 #if !defined(USE_SHA1) && !defined(USE_SHA256)
