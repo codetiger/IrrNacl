@@ -24,8 +24,8 @@ namespace video
 	const char * const COGLES2ParallaxMapRenderer::sBuiltInShaderUniformNames[] =
 	{
 		"uMvpMatrix",
-		"uLightPos[0]",
-		"uLightColor[0]",
+		"uLightPos",
+		"uLightColor",
 		"uEyePos",
 		"texture0",
 		"texture1",

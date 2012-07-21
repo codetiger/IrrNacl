@@ -10,6 +10,10 @@
 #include "IrrCompileConfig.h"
 
 #ifdef _IRR_COMPILE_WITH_OGLES2_
+#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
+#include <OpenGLES/ES2/gl.h>
+#include <OpenGLES/ES2/glext.h>
+#else
 #ifndef _IRR_COMPILE_WITH_NACL_DEVICE_
 #include <EGL/egl.h>
 #endif
@@ -18,6 +22,7 @@
 typedef char GLchar;
 #if defined(_IRR_OGLES2_USE_EXTPOINTER_)
 #include "gles2-ext.h"
+#endif
 #endif
 #include "os.h"
 #include "EDriverFeatures.h"
@@ -182,7 +187,9 @@ namespace video
 
 		void initExtensions(COGLES2Driver* driver,
 #ifndef _IRR_COMPILE_WITH_NACL_DEVICE_
+#ifdef EGL_VERSION_1_0
 				EGLDisplay display, 
+#endif
 #endif
 				bool withStencil);
 

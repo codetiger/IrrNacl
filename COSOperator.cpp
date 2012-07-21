@@ -13,7 +13,9 @@
 #include <unistd.h>
 #ifndef _IRR_SOLARIS_PLATFORM_
 #include <sys/types.h>
+#ifndef _IRR_COMPILE_WITH_NACL_DEVICE_
 #include <sys/sysctl.h>
+#endif
 #endif
 #endif
 

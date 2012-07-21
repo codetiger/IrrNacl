@@ -17,14 +17,19 @@
 #elif defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
 #include "MacOSX/CIrrDeviceMacOSX.h"
 #elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
-#include "CIrrDeviceIPhone.h"
+#include "iOS/CIrrDeviceiOS.h"
 #endif
 
 #include "SIrrCreationParameters.h"
 
 #ifdef _IRR_COMPILE_WITH_OGLES2_
 
+#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
+#include <OpenGLES/ES2/gl.h>
+#include <OpenGLES/ES2/glext.h>
+#else
 #include <EGL/eglplatform.h>
+#endif
 
 #include "CNullDriver.h"
 #include "IMaterialRendererServices.h"
@@ -242,8 +247,14 @@ namespace video
 		//! Sets a constant for the vertex shader based on a name.
 		virtual bool setVertexShaderConstant(const c8* name, const f32* floats, int count);
 
+		//! Int interface for the above.
+		virtual bool setVertexShaderConstant(const c8* name, const s32* ints, int count);
+        
 		//! Sets a constant for the pixel shader based on a name.
 		virtual bool setPixelShaderConstant(const c8* name, const f32* floats, int count);
+
+		//! Int interface for the above.
+		virtual bool setPixelShaderConstant(const c8* name, const s32* ints, int count);
 
 		//! Sets a vertex pointer the vertex shader based on a name.
 		virtual bool setVertexShaderPointer(const c8* name, const void* pointer, s32 size = 3, bool normalized = false, u16 stride = 0);
@@ -442,10 +453,17 @@ namespace video
 #ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 		HDC HDc;
 #endif
+#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
+		MIrrIPhoneDevice Device;
+		GLuint ViewFramebuffer;
+		GLuint ViewRenderbuffer;
+		GLuint ViewDepthRenderbuffer;
+#else
 		NativeWindowType EglWindow;
 		void* EglDisplay;
 		void* EglSurface;
 		void* EglContext;
+#endif
 
 		COGLES2FixedPipelineShader* FixedPipeline;
 		COGLES2Renderer2d* TwoDRenderer;

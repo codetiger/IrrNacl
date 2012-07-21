@@ -3,6 +3,7 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CReadFile.h"
+#include "os.h"
 
 namespace irr
 {
@@ -11,7 +12,13 @@ namespace io
 
 
 CReadFile::CReadFile(const io::path& fileName)
-: File(0), FileSize(0), Filename(fileName)
+: 
+#ifdef _IRR_COMPILE_WITH_NACL_DEVICE_
+fh(0),
+#else
+File(0), 
+#endif
+FileSize(0), Filename(fileName)
 {
 	#ifdef _DEBUG
 	setDebugName("CReadFile");
@@ -23,8 +30,13 @@ CReadFile::CReadFile(const io::path& fileName)
 
 CReadFile::~CReadFile()
 {
+#ifdef _IRR_COMPILE_WITH_NACL_DEVICE_
+	if (fh != -1)
+		close(fh);
+#else
 	if (File)
 		fclose(File);
+#endif
 }
 
 
@@ -34,7 +46,11 @@ s32 CReadFile::read(void* buffer, u32 sizeToRead)
 	if (!isOpen())
 		return 0;
 
+#ifdef _IRR_COMPILE_WITH_NACL_DEVICE_
+	return (s32)(KernelProxy::KPInstance())->read(fh, buffer, sizeToRead);
+#else
 	return (s32)fread(buffer, 1, sizeToRead, File);
+#endif
 }
 
 
@@ -46,7 +62,11 @@ bool CReadFile::seek(long finalPos, bool relativeMovement)
 	if (!isOpen())
 		return false;
 
+#ifdef _IRR_COMPILE_WITH_NACL_DEVICE_
+	return (lseek(fh, finalPos, relativeMovement ? SEEK_CUR : SEEK_SET) >= 0);
+#else
 	return fseek(File, finalPos, relativeMovement ? SEEK_CUR : SEEK_SET) == 0;
+#endif
 }
 
 
@@ -60,7 +80,11 @@ long CReadFile::getSize() const
 //! returns where in the file we are.
 long CReadFile::getPos() const
 {
+#ifdef _IRR_COMPILE_WITH_NACL_DEVICE_
+	return lseek(fh, 0, SEEK_CUR);
+#else
 	return ftell(File);
+#endif
 }
 
 
@@ -69,16 +93,31 @@ void CReadFile::openFile()
 {
 	if (Filename.size() == 0) // bugfix posted by rt
 	{
+#ifdef _IRR_COMPILE_WITH_NACL_DEVICE_
+		fh = 0;
+#else
 		File = 0;
+#endif
 		return;
 	}
 
+#ifdef _IRR_COMPILE_WITH_NACL_DEVICE_
+	fh = open(Filename.c_str(), O_RDONLY);
+	if (fh != -1)
+	{
+		// get FileSize
+		lseek(fh, 0, SEEK_END);
+		FileSize = getPos();
+		lseek(fh, 0, SEEK_SET);
+	} else {
+		os::Printer::log("Error Reading File", ELL_INFORMATION);
+	}
+#else
 #if defined ( _IRR_WCHAR_FILESYSTEM )
 	File = _wfopen(Filename.c_str(), L"rb");
 #else
 	File = fopen(Filename.c_str(), "rb");
 #endif
-
 	if (File)
 	{
 		// get FileSize
@@ -87,6 +126,8 @@ void CReadFile::openFile()
 		FileSize = getPos();
 		fseek(File, 0, SEEK_SET);
 	}
+#endif
+
 }
 
 

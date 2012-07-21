@@ -8,8 +8,9 @@
 #include "irrTypes.h"
 #include <new>
 // necessary for older compilers
+#ifndef _IRR_COMPILE_WITH_NACL_DEVICE_
 #include <memory.h>
-
+#endif
 namespace irr
 {
 namespace core

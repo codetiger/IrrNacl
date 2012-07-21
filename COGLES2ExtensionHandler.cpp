@@ -137,16 +137,19 @@ namespace video
 
 	void COGLES2ExtensionHandler::initExtensions(COGLES2Driver* driver,
 #ifndef _IRR_COMPILE_WITH_NACL_DEVICE_
+#ifdef EGL_VERSION_1_0
 			EGLDisplay display, 
+#endif
 #endif
 			bool withStencil)
 	{
-
+#ifdef EGL_VERSION_1_0
 #ifndef _IRR_COMPILE_WITH_NACL_DEVICE_
 		const f32 egl_ver = core::fast_atof(reinterpret_cast<const c8*>(eglQueryString(display, EGL_VERSION)));
 		EGLVersion = static_cast<u16>(core::floor32(egl_ver) * 100 + core::round32(core::fract(egl_ver) * 10.0f));
 		core::stringc eglExtensions = eglQueryString(display, EGL_EXTENSIONS);
 		os::Printer::log(eglExtensions.c_str());
+#endif
 #endif
 		const core::stringc stringVer(glGetString(GL_VERSION));
 		const f32 ogl_ver = core::fast_atof(stringVer.c_str() + 10);

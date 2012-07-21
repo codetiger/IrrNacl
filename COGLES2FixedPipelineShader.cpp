@@ -18,31 +18,32 @@ namespace video
 
 	const char* const COGLES2FixedPipelineShader::sBuiltInShaderUniformNames[] =
 	{
-		"uRenderMode",
+        "uVRenderMode",
+		"uFRenderMode",
 		"uMvpMatrix",
 		"uWorldMatrix",
 		"uNormalize",
 		"uEyePos",
-		"uUseLight[0]",
-		"uLightPosition[0]",
-		"uLightAmbient[0]",
-		"uLightDiffuse[0]",
-		"uLightSpecular[0]",
-		"uLightDirection[0]",
-		"uLightAttenuation[0]",
-		"uLightExponent[0]",
-		"uLightCutoff[0]",
+		"uUseLight",
+		"uLightPosition",
+		"uLightAmbient",
+		"uLightDiffuse",
+		"uLightSpecular",
+		"uLightDirection",
+		"uLightAttenuation",
+		"uLightExponent",
+		"uLightCutoff",
 		"uAmbientColor",
 		"uLighting",
 		"uMaterialAmbient",
 		"uMaterialEmission",
 		"uMaterialDiffuse",
-		"uMaterialSpec",
-		"uMaterialShine",
+		"uMaterialSpecular",
+		"uMaterialShininess",
 		"uColorMaterial",
-		"uUseTexture[0]",
-		"uTextureMatrix[0]",
-		"uUseTexMatrix[0]",
+		"uUseTexture",
+		"uTextureMatrix",
+		"uUseTexMatrix",
 		"uClip",
 		"uClipPlane",
 		"uAlphaTest",
@@ -221,7 +222,8 @@ namespace video
 
 		setUniform(CLIP, &Clip);
 		setUniform(CLIP_PLANE, &ClipPlane);
-		setUniform(RENDER_MODE, &RenderMode);
+		setUniform(VRENDER_MODE, &RenderMode);
+        setUniform(FRENDER_MODE, &RenderMode);
 
 		return statusOk ;
 	};

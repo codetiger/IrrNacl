@@ -18,10 +18,15 @@
 #include "CImage.h"
 #include "os.h"
 
+#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
+#include <OpenGLES/ES2/gl.h>
+#include <OpenGLES/ES2/glext.h>
+#else
 #ifndef _IRR_COMPILE_WITH_NACL_DEVICE_
 #include <EGL/egl.h>
 #endif
 #include <GLES2/gl2.h>
+#endif
 
 namespace irr
 {
@@ -40,7 +45,9 @@ namespace video
 		Transformation3DChanged(true), AntiAlias(params.AntiAlias),
 		RenderTargetTexture(0), CurrentRendertargetSize(0, 0), ColorFormat(ECF_R8G8B8)
 #ifndef _IRR_COMPILE_WITH_NACL_DEVICE_
+#ifdef EGL_VERSION_1_0
 		, EglDisplay(EGL_NO_DISPLAY)
+#endif
 #endif
 #if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
 		, HDc(0)
@@ -71,7 +78,10 @@ namespace video
 		Device = device;
 #endif
 
-#ifndef _IRR_COMPILE_WITH_NACL_DEVICE_
+#ifdef _IRR_COMPILE_WITH_NACL_DEVICE_
+		genericDriverInit(params.WindowSize, params.Stencilbuffer);
+#else
+#ifdef EGL_VERSION_1_0
 		if (EglDisplay == EGL_NO_DISPLAY)
 		{
 			os::Printer::log("Getting OpenGL-ES2 display.");
@@ -233,14 +243,39 @@ namespace video
 		{
 			os::Printer::log("Could not make Context current for OpenGL-ES2 display.");
 		}
-#endif
 
 		genericDriverInit(params.WindowSize, params.Stencilbuffer);
 
-#ifndef _IRR_COMPILE_WITH_NACL_DEVICE_
 		// set vsync
 		if (params.Vsync)
 			eglSwapInterval(EglDisplay, 1);
+#elif defined(GL_ES_VERSION_2_0)
+        glGenFramebuffers(1, &ViewFramebuffer);
+        glGenRenderbuffers(1, &ViewRenderbuffer);
+        glBindRenderbuffer(GL_RENDERBUFFER, ViewRenderbuffer);
+
+#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
+        ExposedData.OGLESIPhone.AppDelegate = Device.DeviceM;
+        (*Device.displayInit)(&Device, &ExposedData.OGLESIPhone.Context, &ExposedData.OGLESIPhone.View);
+#endif
+        
+        GLint backingWidth;
+        GLint backingHeight;
+        glGetRenderbufferParameteriv(
+                                        GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &backingWidth);
+        glGetRenderbufferParameteriv(
+                                        GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &backingHeight);
+        
+        glGenRenderbuffers(1, &ViewDepthRenderbuffer);
+        glBindRenderbuffer(GL_RENDERBUFFER, ViewDepthRenderbuffer);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, backingWidth, backingHeight);
+        
+        glBindFramebuffer(GL_FRAMEBUFFER, ViewFramebuffer);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, ViewRenderbuffer);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, ViewDepthRenderbuffer);
+        
+        genericDriverInit(params.WindowSize, params.Stencilbuffer);
+#endif
 #endif
 	}
 
@@ -251,6 +286,7 @@ namespace video
 		deleteMaterialRenders();
 		deleteAllTextures();
 
+#if defined(EGL_VERSION_1_0)
 		// HACK : the following is commented because destroying the context crashes under Linux (Thibault 04-feb-10)
 		/*eglMakeCurrent(EGL_NO_DISPLAY, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 		eglDestroyContext(EglDisplay, EglContext);
@@ -262,6 +298,25 @@ namespace video
 #if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
 		if (HDc)
 			ReleaseDC((HWND)EglWindow, HDc);
+#endif
+#elif defined(GL_ES_VERSION_2_0)
+#ifndef _IRR_COMPILE_WITH_NACL_DEVICE_
+        if (0 != ViewFramebuffer)
+        {
+            glDeleteFramebuffers(1,&ViewFramebuffer);
+            ViewFramebuffer = 0;
+        }
+        if (0 != ViewRenderbuffer)
+        {
+            glDeleteRenderbuffers(1,&ViewRenderbuffer);
+            ViewRenderbuffer = 0;
+        }
+        if (0 != ViewDepthRenderbuffer)
+        {
+            glDeleteRenderbuffers(1,&ViewDepthRenderbuffer);
+            ViewDepthRenderbuffer = 0;
+        }
+#endif
 #endif
 
 		delete TwoDRenderer;
@@ -278,7 +333,9 @@ namespace video
 		Name = glGetString(GL_VERSION);
 		printVersion();
 
+#if defined(EGL_VERSION_1_0)
 		os::Printer::log(eglQueryString(EglDisplay, EGL_CLIENT_APIS));
+#endif
 
 		// print renderer information
 		vendorName = glGetString(GL_VENDOR);
@@ -290,8 +347,10 @@ namespace video
 #endif
 		// load extensions
 		initExtensions(this,
+#if defined(EGL_VERSION_1_0)
 #ifndef _IRR_COMPILE_WITH_NACL_DEVICE_
 						EglDisplay,
+#endif
 #endif
 						stencilBuffer);
 
@@ -411,6 +470,7 @@ namespace video
 		CNullDriver::endScene();
 
 #ifndef _IRR_COMPILE_WITH_NACL_DEVICE_
+#if defined(EGL_VERSION_1_0)
 		eglSwapBuffers(EglDisplay, EglSurface);
 		EGLint g = eglGetError();
 		if (EGL_SUCCESS != g)
@@ -424,7 +484,14 @@ namespace video
 				os::Printer::log("Could not swap buffers for OpenGL-ES2 driver.");
 			return false;
 		}
+#elif defined(GL_ES_VERSION_2_0)
+        glFlush();
+        glBindRenderbuffer(GL_RENDERBUFFER, ViewRenderbuffer);
+#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
+        (*Device.displayEnd)(&Device);
 #endif
+#endif
+#endif        
 		return true;
 	}
 
@@ -1359,14 +1426,25 @@ namespace video
 
 			const core::rect<s32> poss(targetPos, sourceRects[currentIndex].getSize());
 
+			const u32 vstart = vertices.size();
 			vertices.push_back(S3DVertex((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y, 0, 0, 0, 1, color, tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y));
 			vertices.push_back(S3DVertex((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y, 0, 0, 0, 1, color, tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y));
 			vertices.push_back(S3DVertex((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y, 0, 0, 0, 1, color, tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y));
 			vertices.push_back(S3DVertex((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y, 0, 0, 0, 1, color, tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y));
+			quadIndices.push_back(vstart);
+			quadIndices.push_back(vstart+1);
+			quadIndices.push_back(vstart+2);
+			quadIndices.push_back(vstart);
+			quadIndices.push_back(vstart+2);
+			quadIndices.push_back(vstart+3);
 
 			targetPos.X += sourceRects[currentIndex].getWidth();
 		}
-		drawVertexPrimitiveList2d3d(vertices.pointer(), indices.size()*4, quadIndices.pointer(), 2*indices.size(), video::EVT_STANDARD, scene::EPT_TRIANGLES, EIT_16BIT, false);
+		if (vertices.size())
+			drawVertexPrimitiveList2d3d(vertices.pointer(), vertices.size(),
+					quadIndices.pointer(), vertices.size()/2,
+					video::EVT_STANDARD, scene::EPT_TRIANGLES,
+					EIT_16BIT, false);
 		if (clipRect)
 			glDisable(GL_SCISSOR_TEST);
 		testGLError();
@@ -2380,12 +2458,25 @@ namespace video
 		return setPixelShaderConstant(name, floats, count);
 	}
 
+    //! Int interface for the above.
+    bool COGLES2Driver::setVertexShaderConstant(const c8* name, const s32* ints, int count)
+    {
+        return setPixelShaderConstant(name, ints, count);
+    }
+    
 	//! Sets a constant for the pixel shader based on a name.
 	bool COGLES2Driver::setPixelShaderConstant(const c8* name, const f32* floats, int count)
 	{
 		os::Printer::log("Error: Please call services->setPixelShaderConstant(), not VideoDriver->setPixelShaderConstant().");
 		return false;
 	}
+
+    //! Int interface for the above.
+    bool COGLES2Driver::setPixelShaderConstant(const c8* name, const s32* ints, int count)
+    {
+        os::Printer::log("Error: Please call services->setPixelShaderConstant(), not VideoDriver->setPixelShaderConstant().");
+        return false;
+    }
 
 	//! Sets a vertex pointer the vertex shader based on a name.
 	bool COGLES2Driver::setVertexShaderPointer(const c8*, const void*, s32, bool, u16)
@@ -2847,7 +2938,7 @@ namespace irr
 namespace video
 {
 
-#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_COMPILE_WITH_SDL_DEVICE_) || defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_) || defined(_IRR_COMPILE_WITH_CONSOLE_DEVICE_)
+#if !defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_) && (defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_COMPILE_WITH_SDL_DEVICE_) || defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_) || defined(_IRR_COMPILE_WITH_CONSOLE_DEVICE_))
 	IVideoDriver* createOGLES2Driver(const SIrrlichtCreationParameters& params,
 			video::SExposedVideoData& data, io::IFileSystem* io)
 	{

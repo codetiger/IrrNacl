@@ -28,9 +28,8 @@ VERSION_RELEASE = 0-SVN
 #List of object files, separated based on engine architecture
 
 
-IRRMESHLOADER = CBSPMeshFileLoader.o CMD2MeshFileLoader.o CMD3MeshFileLoader.o CMS3DMeshFileLoader.o CB3DMeshFileLoader.o C3DSMeshFileLoader.o COgreMeshFileLoader.o COBJMeshFileLoader.o CColladaFileLoader.o CCSMLoader.o CDMFLoader.o CLMTSMeshFileLoader.o CMY3DMeshFileLoader.o COCTLoader.o CXMeshFileLoader.o CIrrMeshFileLoader.o CSTLMeshFileLoader.o CLWOMeshFileLoader.o CPLYMeshFileLoader.o CSMFMeshFileLoader.o
-IRRMESHWRITER = CColladaMeshWriter.o CIrrMeshWriter.o CSTLMeshWriter.o COBJMeshWriter.o CPLYMeshWriter.o
-IRRMESHOBJ = $(IRRMESHLOADER) $(IRRMESHWRITER) \
+IRRMESHLOADER = CB3DMeshFileLoader.o CMD2MeshFileLoader.o CXMeshFileLoader.o
+IRRMESHOBJ = $(IRRMESHLOADER) \
 	CSkinnedMesh.o CBoneSceneNode.o CMeshSceneNode.o \
 	CAnimatedMeshSceneNode.o CAnimatedMeshMD2.o CAnimatedMeshMD3.o \
 	CQ3LevelMesh.o CQuake3ShaderSceneNode.o CAnimatedMeshHalfLife.o
@@ -38,17 +37,13 @@ IRROBJ = CBillboardSceneNode.o CCameraSceneNode.o CDummyTransformationSceneNode.
 IRRPARTICLEOBJ = CParticleAnimatedMeshSceneNodeEmitter.o CParticleBoxEmitter.o CParticleCylinderEmitter.o CParticleMeshEmitter.o CParticlePointEmitter.o CParticleRingEmitter.o CParticleSphereEmitter.o CParticleAttractionAffector.o CParticleFadeOutAffector.o CParticleGravityAffector.o CParticleRotationAffector.o CParticleSystemSceneNode.o CParticleScaleAffector.o
 IRRANIMOBJ = CSceneNodeAnimatorCameraFPS.o CSceneNodeAnimatorCameraMaya.o CSceneNodeAnimatorCollisionResponse.o CSceneNodeAnimatorDelete.o CSceneNodeAnimatorFlyCircle.o CSceneNodeAnimatorFlyStraight.o CSceneNodeAnimatorFollowSpline.o CSceneNodeAnimatorRotation.o CSceneNodeAnimatorTexture.o
 IRRDRVROBJ = CNullDriver.o COGLES2Driver.o COGLES2FixedPipelineShader.o COGLES2ParallaxMapRenderer.o COGLES2SLMaterialRenderer.o COGLES2ExtensionHandler.o COGLES2NormalMapRenderer.o COGLES2Renderer2D.o COGLES2Texture.o
-IRRIMAGEOBJ = CColorConverter.o CImage.o CImageLoaderBMP.o CImageLoaderDDS.o CImageLoaderJPG.o CImageLoaderPCX.o CImageLoaderPNG.o CImageLoaderPSD.o CImageLoaderTGA.o CImageLoaderPPM.o CImageLoaderWAL.o CImageLoaderRGB.o \
-	CImageWriterBMP.o CImageWriterJPG.o CImageWriterPCX.o CImageWriterPNG.o CImageWriterPPM.o CImageWriterPSD.o CImageWriterTGA.o
+IRRIMAGEOBJ = CColorConverter.o CImage.o CImageLoaderBMP.o CImageLoaderPNG.o CImageWriterPNG.o
 IRRVIDEOOBJ = CVideoModeList.o CFPSCounter.o $(IRRDRVROBJ) $(IRRIMAGEOBJ)
-IRRSWRENDEROBJ = CSoftwareDriver.o CSoftwareTexture.o CTRFlat.o CTRFlatWire.o CTRGouraud.o CTRGouraudWire.o CTRNormalMap.o CTRStencilShadow.o CTRTextureFlat.o CTRTextureFlatWire.o CTRTextureGouraud.o CTRTextureGouraudAdd.o CTRTextureGouraudNoZ.o CTRTextureGouraudWire.o CZBuffer.o CTRTextureGouraudVertexAlpha2.o CTRTextureGouraudNoZ2.o CTRTextureLightMap2_M2.o CTRTextureLightMap2_M4.o CTRTextureLightMap2_M1.o CSoftwareDriver2.o CSoftwareTexture2.o CTRTextureGouraud2.o CTRGouraud2.o CTRGouraudAlpha2.o CTRGouraudAlphaNoZ2.o CTRTextureDetailMap2.o CTRTextureGouraudAdd2.o CTRTextureGouraudAddNoZ2.o CTRTextureWire2.o CTRTextureLightMap2_Add.o CTRTextureLightMapGouraud2_M4.o IBurningShader.o CTRTextureBlend.o CTRTextureGouraudAlpha.o CTRTextureGouraudAlphaNoZ.o CDepthBuffer.o CBurningShader_Raster_Reference.o
 IRRIOOBJ = CFileList.o CFileSystem.o CLimitReadFile.o CMemoryFile.o CReadFile.o CWriteFile.o CXMLReader.o CXMLWriter.o CWADReader.o CZipReader.o CPakReader.o CNPKReader.o CTarReader.o CMountPointReader.o irrXML.o CAttributes.o lzma/LzmaDec.o
-IRROTHEROBJ = CIrrDeviceSDL.o CIrrDeviceConsole.o CIrrDeviceStub.o CIrrDeviceNaCl.o CLogger.o COSOperator.o Irrlicht.o os.o
+IRROTHEROBJ = CIrrDeviceConsole.o CIrrDeviceStub.o CIrrDeviceNaCl.o CLogger.o COSOperator.o Irrlicht.o os.o
 IRRGUIOBJ = CGUIButton.o CGUICheckBox.o CGUIComboBox.o CGUIContextMenu.o CGUIEditBox.o CGUIEnvironment.o CGUIFileOpenDialog.o CGUIFont.o CGUIImage.o CGUIInOutFader.o CGUIListBox.o CGUIMenu.o CGUIMeshViewer.o CGUIMessageBox.o CGUIModalScreen.o CGUIScrollBar.o CGUISpinBox.o CGUISkin.o CGUIStaticText.o CGUITabControl.o CGUITable.o CGUIToolBar.o CGUIWindow.o CGUIColorSelectDialog.o CDefaultGUIElementFactory.o CGUISpriteBank.o CGUIImageList.o CGUITreeView.o
 ZLIBOBJ = zlib/adler32.o zlib/compress.o zlib/crc32.o zlib/deflate.o zlib/inffast.o zlib/inflate.o zlib/inftrees.o zlib/trees.o zlib/uncompr.o zlib/zutil.o
-JPEGLIBOBJ = jpeglib/jcapimin.o jpeglib/jcapistd.o jpeglib/jccoefct.o jpeglib/jccolor.o jpeglib/jcdctmgr.o jpeglib/jchuff.o jpeglib/jcinit.o jpeglib/jcmainct.o jpeglib/jcmarker.o jpeglib/jcmaster.o jpeglib/jcomapi.o jpeglib/jcparam.o jpeglib/jcprepct.o jpeglib/jcsample.o jpeglib/jctrans.o jpeglib/jdapimin.o jpeglib/jdapistd.o jpeglib/jdatadst.o jpeglib/jdatasrc.o jpeglib/jdcoefct.o jpeglib/jdcolor.o jpeglib/jddctmgr.o jpeglib/jdhuff.o jpeglib/jdinput.o jpeglib/jdmainct.o jpeglib/jdmarker.o jpeglib/jdmaster.o jpeglib/jdmerge.o jpeglib/jdpostct.o jpeglib/jdsample.o jpeglib/jdtrans.o jpeglib/jerror.o jpeglib/jfdctflt.o jpeglib/jfdctfst.o jpeglib/jfdctint.o jpeglib/jidctflt.o jpeglib/jidctfst.o jpeglib/jidctint.o jpeglib/jmemmgr.o jpeglib/jmemnobs.o jpeglib/jquant1.o jpeglib/jquant2.o jpeglib/jutils.o jpeglib/jcarith.o jpeglib/jdarith.o jpeglib/jaricom.o
 LIBPNGOBJ = libpng/png.o libpng/pngerror.o libpng/pngget.o libpng/pngmem.o libpng/pngpread.o libpng/pngread.o libpng/pngrio.o libpng/pngrtran.o libpng/pngrutil.o libpng/pngset.o libpng/pngtrans.o libpng/pngwio.o libpng/pngwrite.o libpng/pngwtran.o libpng/pngwutil.o
-LIBAESGM = aesGladman/aescrypt.o aesGladman/aeskey.o aesGladman/aestab.o aesGladman/fileenc.o aesGladman/hmac.o aesGladman/prng.o aesGladman/pwd2key.o aesGladman/sha1.o aesGladman/sha2.o
 BZIP2OBJ = bzip2/blocksort.o bzip2/huffman.o bzip2/crctable.o bzip2/randtable.o bzip2/bzcompress.o bzip2/decompress.o bzip2/bzlib.o
 
 # Next variable is for additional scene nodes etc. of customized Irrlicht versions
@@ -66,13 +61,13 @@ THIS_MAKEFILE:=$(abspath $(lastword $(MAKEFILE_LIST)))
 NACL_SDK_ROOT?=$(abspath $(dir $(THIS_MAKEFILE))../..)
 
 OSNAME:=win
-TC_PATH:=$(abspath $(NACL_SDK_ROOT)/toolchain/$(OSNAME)_x86_glibc)
+TC_PATH:=$(abspath $(NACL_SDK_ROOT)/toolchain/$(OSNAME)_x86_newlib)
 CXX:=$(TC_PATH)/bin/i686-nacl-g++
 CC:=$(TC_PATH)/bin/i686-nacl-gcc
 AR:=$(TC_PATH)/bin/i686-nacl-ar
 
 
-CXXINCS = -Iinclude -Izlib -Ijpeglib -Ilibpng
+CXXINCS = -Iinclude -Izlib -Ilibpng
 CPPFLAGS += $(CXXINCS) -DIRRLICHT_EXPORTS=1
 CXXFLAGS += -Wall -pipe -fno-exceptions -fno-rtti -fstrict-aliasing
 ifndef NDEBUG
@@ -109,7 +104,7 @@ sharedlib: $(LINKOBJ)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -shared -Wl,-soname,$(SONAME) -o $(SHARED_FULLNAME) $^ $(LDFLAGS)
 	mkdir -p $(LIB_PATH)
 	cp $(SHARED_FULLNAME) $(LIB_PATH)
-	cp $(SHARED_FULLNAME) ../tumbler/libs/libIrrlicht.so
+	cp $(SHARED_FULLNAME) ../testIrrNaCl/libs/libIrrlicht.so
 
 # Builds Irrlicht as static lib (libIrrlicht.a)
 $(STATIC_LIB): $(LINKOBJ)
@@ -119,6 +114,7 @@ $(STATIC_LIB): $(LINKOBJ)
 staticlib staticlib_osx: $(STATIC_LIB)
 	mkdir -p $(LIB_PATH)
 	cp $^ $(LIB_PATH)
+	cp $^ ../testIrrNaCl/Irrlicht/libIrrlicht.a
 
 TAGS:
 	ctags *.cpp ../../include/*.h *.h

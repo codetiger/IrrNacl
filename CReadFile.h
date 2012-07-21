@@ -9,6 +9,11 @@
 #include "IReadFile.h"
 #include "irrString.h"
 
+#ifdef _IRR_COMPILE_WITH_NACL_DEVICE_
+#include <nacl-mounts/base/KernelProxy.h>
+#endif
+
+
 namespace irr
 {
 
@@ -38,7 +43,11 @@ namespace io
 		//! returns if file is open
 		virtual bool isOpen() const
 		{
-			return File != 0;
+#ifdef _IRR_COMPILE_WITH_NACL_DEVICE_
+		return (fh >= 0);
+#else
+		return File != 0;
+#endif
 		}
 
 		//! returns where in the file we are.
@@ -51,8 +60,11 @@ namespace io
 
 		//! opens the file
 		void openFile();
-
+#ifdef _IRR_COMPILE_WITH_NACL_DEVICE_
+		int fh;
+#else
 		FILE* File;
+#endif
 		long FileSize;
 		io::path Filename;
 	};
