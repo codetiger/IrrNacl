@@ -1,7 +1,8 @@
 // Copyright (C) 2002-2008 Nikolaus Gebhardt
-// Copyright (C) 2008 Redshift Software, Inc.
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
+// This device code is based on the other original device implementations
+// contributed by Harishankar Narayanan (codetiger).
 
 #include "CIrrDeviceNaCl.h"
 

@@ -1,8 +1,8 @@
 // Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
-// This device code is based on the original SDL device implementation
-// contributed by Shane Parker (sirshane).
+// This device code is based on the other original device implementations
+// contributed by Harishankar Narayanan (codetiger).
 
 #ifndef __C_IRR_DEVICE_NACL_H_INCLUDED__
 #define __C_IRR_DEVICE_NACL_H_INCLUDED__
